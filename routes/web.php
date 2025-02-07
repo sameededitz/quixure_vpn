@@ -24,6 +24,11 @@ Route::get('/storage-link', function () {
     return 'Linked';
 });
 
+Route::get('/migrate', function () {
+    Artisan::call('migrate --seed');
+    return 'Migrated and Seeded';
+});
+
 Route::get('email/verify/view/{id}/{hash}', [VerifyController::class, 'viewEmail'])->name('email.verification.view');
 Route::get('password/reset/view/{email}/{token}', [VerifyController::class, 'viewInBrowser'])->name('password.reset.view');
 
