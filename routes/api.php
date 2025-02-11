@@ -14,9 +14,9 @@ Route::middleware('guest')->group(function () {
 
     Route::post('/signup', [AuthController::class, 'signup'])->name('api.signup');
 
-    Route::post('/login/google', [SocialController::class, 'LoginGoogle'])->name('api.login.google');
+    Route::post('/login/google', [SocialController::class, 'handleGoogleCallback'])->name('api.login.google');
 
-    Route::post('/login/apple', [SocialController::class, 'loginApple'])->name('api.login.apple');
+    Route::post('/login/apple', [SocialController::class, 'handleAppleCallback'])->name('api.login.apple');
 
     Route::post('/reset-password', [VerifyController::class, 'sendResetLink'])->name('api.reset.password');
 });
