@@ -40,7 +40,7 @@ class SubServerAdd extends Component
             'ovpn_password' => 'required|string|max:255',
             'wg_panel_address' => 'required|string|max:255',
             'wg_panel_password' => 'required|string|max:255',
-            'ovpn_config' => 'required|string|max:255',
+            'ovpn_config' => 'required|string|max:9999',
         ];
     }
 
