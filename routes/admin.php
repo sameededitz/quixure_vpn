@@ -1,13 +1,10 @@
 <?php
 
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OptionController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ServerController;
 use App\Http\Controllers\SubServerController;
-use App\Http\Controllers\UserDeviceController;
-use App\Livewire\NotificationAdd;
 use App\Livewire\SubServerAdd;
 use App\Livewire\SubServerEdit;
 use App\Livewire\UserEdit;
@@ -43,9 +40,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'verified', 'verifyR
     Route::get('/add/user', [AdminController::class, 'addUser'])->name('add-user');
     Route::get('/user/{user}/edit', UserEdit::class)->name('edit-user');
     Route::delete('/delete-user/{user}', [AdminController::class, 'deleteUser'])->name('delete-user');
-
-    Route::get('/user/{user}/devices', [UserDeviceController::class, 'index'])->name('user-devices');
-    Route::delete('/devices/{device}/delete', [UserDeviceController::class, 'delete'])->name('delete-device');
 
     Route::get('/options', [OptionController::class, 'Options'])->name('all-options');
     Route::post('/options/save', [OptionController::class, 'saveOptions'])->name('save-options');

@@ -14,7 +14,7 @@ class AuthController extends Controller
     public function signup(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255|min:3|unique:users,name|regex:/^\S*$/',
+            'name' => 'required|string|max:255|min:3',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8|confirmed'
         ]);
@@ -65,17 +65,16 @@ class AuthController extends Controller
             ], 400);
         }
 
-        $loginType = filter_var($request->name, FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
-        $user = User::where($loginType, $request->name)->first();
+        $user = User::where('email', $request->name)->first();
         if (!$user) {
             return response()->json([
                 'status' => false,
-                'message' => "We couldn't find an account with that " . ($loginType == 'email' ? 'email' : 'username') . "."
+                'message' => "We couldn't find an account with that email."
             ], 400);
         }
 
         $credentials = [
-            $loginType => $request->name,
+            'email' => $request->name,
             'password' => $request->password,
         ];
         $remember = $request->has('remember');
@@ -109,27 +108,15 @@ class AuthController extends Controller
         ], 400);
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
-        $user = Auth::user();
         /** @var \App\Models\User $user **/
-        $user->unregisterDevice($request->device_id);
+        $user = Auth::user();
         $user->tokens()->delete();
 
         return response()->json([
             'status' => true,
             'message' => 'User logged out successfully!'
-        ], 200);
-    }
-
-    public function user(Request $request)
-    {
-        $user = Auth::user();
-        /** @var \App\Models\User $user **/
-        return response()->json([
-            'status' => true,
-            'user' => $user,
-            'device_limit' => $user->getSubscriptionDeviceLimit()
         ], 200);
     }
 }

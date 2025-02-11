@@ -7,7 +7,6 @@
                 <th scope="col">Email</th>
                 <th scope="col">Plan</th>
                 <th scope="col">Premium</th>
-                <th scope="col">Device Limit</th>
                 <th scope="col">Last Login</th>
                 <th scope="col">Time</th>
                 <th scope="col">Action</th>
@@ -20,14 +19,14 @@
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
                     <td>
-                        @php
-                            $latestPurchase = $user->purchases()->latest()->first();
-                            $planName = $latestPurchase ? optional($latestPurchase->plan)->name ?? 'Custom' : 'None';
-                        @endphp
-                        {{ $planName }}
+                        @if ($user->purchases)
+                            {{ $user->purchases->plan->name }}
+                        @else
+                            -
+                        @endif
                     </td>
                     <td>
-                        @if ($user->purchases()->latest()->first())
+                        @if ($user->purchases)
                             <button type="submit" wire:click="clearPurchase({{ $user->id }})"
                                 class="w-32-px h-32-px bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center">
                                 <iconify-icon icon="ic:sharp-clear"></iconify-icon>
@@ -39,16 +38,11 @@
                             </button>
                         @endif
                     </td>
-                    <td>{{ $user->device_limit ? $user->device_limit : $user->getSubscriptionDeviceLimit() }}</td>
                     <td>{{ $user->last_login ? $user->last_login->diffForHumans() : 'Never' }}</td>
                     <td>C: {{ $user->created_at->diffForHumans() }}<br>U: {{ $user->updated_at->diffForHumans() }}
                     </td>
                     <td>
                         <div class="d-flex align-items-center">
-                            {{-- <a href="{{ route('user-devices', $user->id) }}"
-                                class="w-32-px me-4 h-32-px bg-info-focus text-info-main rounded-circle d-inline-flex align-items-center justify-content-center">
-                                <iconify-icon icon="ph:devices-light"></iconify-icon>
-                            </a> --}}
                             <a href="{{ route('edit-user', $user->id) }}"
                                 class="w-32-px me-4 h-32-px bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center">
                                 <iconify-icon icon="lucide:edit"></iconify-icon>

@@ -110,6 +110,6 @@ class AllUsers extends Component
 
     public function render()
     {
-        return view('livewire.all-users');
+        return view('livewire.alwl-users');
     }
 }

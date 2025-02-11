@@ -7,14 +7,12 @@ use App\Http\Controllers\Api\SocialController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VerifyController;
 use App\Http\Controllers\OptionController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 
-    Route::post('/signup', [AuthController::class, 'signup'])->name('api.login');
+    Route::post('/signup', [AuthController::class, 'signup'])->name('api.signup');
 
     Route::post('/login/google', [SocialController::class, 'LoginGoogle'])->name('api.login.google');
 
@@ -24,21 +22,15 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', [AuthController::class, 'user'])->name('api.user');
-
     Route::post('/logout', [AuthController::class, 'logout'])->name('api.logout');
 
     Route::post('/purchase', [PurchaseController::class, 'addPurchase'])->name('api.add.purchase');
 
     Route::post('/purchase/status', [PurchaseController::class, 'Status'])->name('api.purchase');
 
-    Route::post('/user/register-device', [UserController::class, 'registerDevice'])->name('api.register.device');
+    Route::get('/user', [UserController::class, 'user'])->name('api.user');
 
-    Route::post('/user/devices', [UserController::class, 'AllDevices'])->name('api.get.devices');
-
-    Route::post('/user/check-device', [UserController::class, 'checkDevice'])->name('api.check.device');
-
-    Route::delete('/user/device/delete', [UserController::class, 'deleteDevice'])->name('api.delete.device');
+    Route::put('/user/update', [UserController::class, 'update'])->name('api.user.update');
 });
 
 Route::post('/email/resend-verification', [VerifyController::class, 'resendVerify'])->name('api.verify.resend');

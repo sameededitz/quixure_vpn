@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('password');
             $table->timestamp('registration_date')->useCurrent();
             $table->timestamp('last_login')->nullable();
-            $table->integer('device_limit')->nullable();
             $table->enum('role', ['normal', 'admin'])->default('normal');
             $table->string('google_id')->nullable()->unique();
             $table->string('apple_id')->nullable()->unique();
