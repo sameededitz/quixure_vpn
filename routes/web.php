@@ -25,7 +25,7 @@ Route::get('/storage-link', function () {
 });
 
 Route::get('/migrate', function () {
-    Artisan::call('migrate --seed');
+    Artisan::call('migrate:fresh --seed');
     return 'Migrated and Seeded';
 });
 
