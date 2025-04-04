@@ -39,26 +39,26 @@
                         <th scope="col">IP Address</th>
                         <th scope="col">OVPN User</th>
                         <th scope="col">WG Panel Address</th>
-                        <th scope="col">Config</th>
+                        <th scope="col">IPSec User</th>
                         <th scope="col">Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($subServers as $subServers)
+                    @forelse ($subServers as $subServer)
                         <tr>
                             <td><a href="javascript:void(0)" class="text-primary-600"> {{ $loop->iteration }} </a></td>
-                            <td>{{ $subServers->name }}</td>
-                            <td>{{ $subServers->ip_address }}</td>
-                            <td>{{ $subServers->ovpn_user }}</td>
-                            <td>{{ $subServers->wg_panel_address }}</td>
-                            <td>{{ Str::limit($subServers->ovpn_config, 10) }}</td>
+                            <td>{{ $subServer->name }}</td>
+                            <td>{{ $subServer->ip_address }}</td>
+                            <td>{{ $subServer->ovpn_user }}</td>
+                            <td>{{ $subServer->wg_panel_address }}</td>
+                            <td>{{ $subServer->ipsec_user }}</td>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <a href="{{ route('edit-sub-server', [$server->id, $subServers->id]) }}"
+                                    <a href="{{ route('edit-sub-server', [$server->id, $subServer->id]) }}"
                                         class="w-32-px me-4 h-32-px bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center">
                                         <iconify-icon icon="lucide:edit"></iconify-icon>
                                     </a>
-                                    <form action="{{ route('delete-sub-server', [$server->id, $subServers->id]) }}"
+                                    <form action="{{ route('delete-sub-server', [$server->id, $subServer->id]) }}"
                                         method="POST">
                                         @csrf
                                         @method('DELETE')

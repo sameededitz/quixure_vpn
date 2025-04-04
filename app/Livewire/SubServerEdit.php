@@ -31,6 +31,18 @@ class SubServerEdit extends Component
     public $wg_panel_password;
 
     #[Validate]
+    public $ipsec_user;
+
+    #[Validate]
+    public $ipsec_password;
+
+    #[Validate]
+    public $ipsec_psk;
+
+    #[Validate]
+    public $ipsec_server;
+
+    #[Validate]
     public $ovpn_config;
 
     protected function rules()
@@ -42,6 +54,10 @@ class SubServerEdit extends Component
             'ovpn_password' => 'required|string|max:255',
             'wg_panel_address' => 'required|string|max:255',
             'wg_panel_password' => 'required|string|max:255',
+            'ipsec_user' => 'required|string',
+            'ipsec_password' => 'required|string',
+            'ipsec_psk' => 'required|string',
+            'ipsec_server' => 'required|string',
             'ovpn_config' => 'required|string|max:9999',
         ];
     }
@@ -56,6 +72,10 @@ class SubServerEdit extends Component
         $this->ovpn_password = $subServer->ovpn_password;
         $this->wg_panel_address = $subServer->wg_panel_address;
         $this->wg_panel_password = $subServer->wg_panel_password;
+        $this->ipsec_user = $subServer->ipsec_user;
+        $this->ipsec_password = $subServer->ipsec_password;
+        $this->ipsec_psk = $subServer->ipsec_psk;
+        $this->ipsec_server = $subServer->ipsec_server;
         $this->ovpn_config = $subServer->ovpn_config;
     }
 
@@ -69,6 +89,10 @@ class SubServerEdit extends Component
             'ovpn_password' => $this->ovpn_password,
             'wg_panel_address' => $this->wg_panel_address,
             'wg_panel_password' => $this->wg_panel_password,
+            'ipsec_user' => $this->ipsec_user,
+            'ipsec_password' => $this->ipsec_password,
+            'ipsec_psk' => $this->ipsec_psk,
+            'ipsec_server' => $this->ipsec_server,
             'ovpn_config' => $this->ovpn_config,
         ]);
 

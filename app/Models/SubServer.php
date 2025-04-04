@@ -18,6 +18,10 @@ class SubServer extends Model
         'wg_panel_address',
         'wg_panel_password',
         'ovpn_config',
+        'ipsec_user',
+        'ipsec_password',
+        'ipsec_psk',
+        'ipsec_server',
     ];
 
     /**

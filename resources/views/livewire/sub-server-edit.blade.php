@@ -54,6 +54,22 @@
                                 <input type="text" wire:model.blur="wg_panel_password" class="form-control" placeholder="WG Password">
                             </div>
                             <div class="col-12">
+                                <label class="form-label">IPSEC User</label>
+                                <input type="text" wire:model.blur="ipsec_user" class="form-control" placeholder="IPSEC User">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">IPSEC Password</label>
+                                <input type="text" wire:model.blur="ipsec_password" class="form-control" placeholder="IPSEC Password">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">IPSEC Server</label>
+                                <input type="text" wire:model.blur="ipsec_server" class="form-control" placeholder="IPSEC Server">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">IPSEC Psk</label>
+                                <input type="text" wire:model.blur="ipsec_psk" class="form-control" placeholder="IPSEC Psk">
+                            </div>
+                            <div class="col-12">
                                 <label class="form-label">OVpn Config</label>
                                 <textarea name="ovpn_config" wire:model.blur="ovpn_config" class="form-control" cols="10" rows="2" placeholder="OVpn Config"></textarea>
                             </div>
