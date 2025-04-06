@@ -38,16 +38,10 @@ class AuthController extends Controller
 
         $user->sendEmailVerificationNotification();
 
-        Auth::login($user);
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
         return response()->json([
             'status' => true,
             'message' => 'Account created successfully! Verify your Email',
             'user' => $user,
-            'access_token' => $token,
-            'token_type' => 'Bearer',
         ]);
     }
 

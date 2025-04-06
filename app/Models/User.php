@@ -8,6 +8,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -88,12 +89,14 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function assignFreeTrial()
     {
-        if ($this->activePlan()) {
+        if ($this->activePlan()->exists()) {
             return;
         }
+
         if ($this->role === 'normal') {
             $this->purchases()->create([
                 'plan_id' => 1,
+                'amount_paid' => 0,
                 'status' => 'active',
                 'start_date' => now(),
                 'end_date' => now()->addDays(3),
