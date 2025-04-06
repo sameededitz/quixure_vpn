@@ -1,13 +1,14 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\VerifyController;
 use App\Models\Plan;
 use App\Models\Purchase;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\VerifyController;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -36,8 +37,12 @@ Route::get('/migrate', function () {
 });
 
 Route::get('/reset-plans-table', function () {
-    Purchase::truncate();
+    DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+    
     Plan::truncate();
+
+    DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+    
     Artisan::call('db:seed');
     return 'Plans Table Reset and Seeded';
 });
