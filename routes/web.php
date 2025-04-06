@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VerifyController;
+use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
@@ -31,6 +32,12 @@ Route::get('/migrate-fresh', function () {
 Route::get('/migrate', function () {
     Artisan::call('migrate');
     return 'Migrated';
+});
+
+Route::get('/reset-plans-table', function () {
+    Plan::truncate();
+    Artisan::call('db:seed');
+    return 'Plans Table Reset and Seeded';
 });
 
 Route::get('email/verify/view/{id}/{hash}', [VerifyController::class, 'viewEmail'])->name('email.verification.view');
@@ -67,7 +74,6 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__ . '/admin.php';
-
 
 Route::get('/api-docs', function () {
     return view('docs.api-docs');
