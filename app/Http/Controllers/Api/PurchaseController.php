@@ -24,75 +24,98 @@ class PurchaseController extends Controller
             ], 400);
         }
 
-        /** @var \App\Models\User $user **/
         $user = Auth::user();
+        /** @var \App\Models\User $user **/
 
-        $plan = Plan::find($request->plan_id);
-        if (!$plan) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Plan not found',
-            ], 400);
-        }
+        $plan = Plan::findOrFail($request->plan_id);
 
+        /** @var \App\Models\Purchase $purchase **/
         $purchase = $user->purchases()
-            ->where('is_active', true)
-            ->where('expires_at', '>', now())
+            ->where('status', 'active')
+            ->where('end_date', '>', now())
             ->first();
 
         $duration = $plan->duration;
 
         if ($purchase) {
-            $currentExpiresAt = Carbon::parse($purchase->expires_at);
-
-            // Extend the expiration date instead of replacing it
-            $newExpiresAt = match ($plan->duration_unit) {
-                'day'   => $currentExpiresAt->addDays($duration),
-                'week'  => $currentExpiresAt->addWeeks($duration),
-                'month' => $currentExpiresAt->addMonths($duration),
-                'year'  => $currentExpiresAt->addYears($duration),
-                default => $currentExpiresAt->addDays(7),
-            };
+            $newEndDate = $this->calculateExpiration(
+                Carbon::parse($purchase->end_date),
+                $plan->duration,
+                $plan->duration_unit
+            );
 
             // Update the purchase with the new expiration date
             $purchase->update([
-                'expires_at' => $newExpiresAt,
+                'plan_id' => $plan->id,
+                'end_date' => $newEndDate,
+                'status' => 'active',
             ]);
+
+            $message = 'Purchase Extended successfully!';
         } else {
-            $expiresAt = match ($plan->duration_unit) {
-                'day'   => now()->addDays($duration),
-                'week'  => now()->addWeeks($duration),
-                'month' => now()->addMonths($duration),
-                'year'  => now()->addYears($duration),
-                default => now()->addDays(7),
-            };
+            $expiresAt = $this->calculateExpiration(now(), $duration, $plan->duration_unit);
             // Create a new purchase
             $purchase = $user->purchases()->create([
                 'plan_id' => $plan->id,
-                'started_at' => now(),
-                'expires_at' => $expiresAt,
-                'is_active' => true,
+                'amount_paid' => $plan->price,
+                'start_date' => now(),
+                'end_date' => $expiresAt,
+                'status' => 'active',
             ]);
+
+            $message = 'Purchase created successfully!';
         }
 
         return response()->json([
             'status' => true,
-            'message' => 'Purchase created successfully!',
-            'purchase' => $purchase
-        ], 201);
+            'message' => $message,
+            'purchase' => $purchase->load('plan')
+        ], 200);
     }
 
-    public function Status()
+    public function active()
     {
-        $user = Auth::user();
         /** @var \App\Models\User $user **/
-        $purchases = $user->purchases()
-            ->where('is_active', true)
-            ->where('expires_at', '>', now())
+        $user = Auth::user();
+        $activePlan = $user->purchases()
+            ->where('status', 'active')
+            ->where('end_date', '>', now())
+            ->with('plan')
             ->first();
+
+        if (!$activePlan) {
+            return response()->json([
+                'status' => false,
+                'message' => 'No active plan found.'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Active plan found.',
+            'plan' => $activePlan
+        ], 200);
+    }
+
+    public function history()
+    {
+        /** @var \App\Models\User $user **/
+        $user = Auth::user();
+        $purchases = $user->purchases()->with('plan')->latest()->get();
         return response()->json([
             'status' => true,
             'purchases' => $purchases
         ], 200);
+    }
+
+    private function calculateExpiration($startDate, $duration, $unit)
+    {
+        return match ($unit) {
+            'day'   => $startDate->addDays($duration),
+            'week'  => $startDate->addWeeks($duration),
+            'month' => $startDate->addMonths($duration),
+            'year'  => $startDate->addYears($duration),
+            default => $startDate->addDays(7),
+        };
     }
 }

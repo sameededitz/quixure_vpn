@@ -1,14 +1,15 @@
 <?php
 
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\OptionController;
-use App\Http\Controllers\PlanController;
-use App\Http\Controllers\ServerController;
-use App\Http\Controllers\SubServerController;
+use App\Livewire\UserEdit;
 use App\Livewire\SubServerAdd;
 use App\Livewire\SubServerEdit;
-use App\Livewire\UserEdit;
+use App\Livewire\UserPurchases;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PlanController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\OptionController;
+use App\Http\Controllers\ServerController;
+use App\Http\Controllers\SubServerController;
 
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'verified', 'verifyRole:admin']], function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('admin-home');
@@ -37,6 +38,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'verified', 'verifyR
     Route::delete('/plans/{plan:slug}', [PlanController::class, 'deletePlan'])->name('delete-plan');
 
     Route::get('/users', [AdminController::class, 'AllUsers'])->name('all-users');
+    Route::get('/users/{userId}/manage', UserPurchases::class)->name('user-purchases');
     Route::get('/add/user', [AdminController::class, 'addUser'])->name('add-user');
     Route::get('/user/{user}/edit', UserEdit::class)->name('edit-user');
     Route::delete('/delete-user/{user}', [AdminController::class, 'deleteUser'])->name('delete-user');

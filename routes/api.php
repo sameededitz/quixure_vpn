@@ -23,10 +23,12 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('api.logout');
+    
+    Route::get('/purchase/status', [PurchaseController::class, 'active'])->name('api.plan.active');
+
+    Route::get('/purchase/history', [PurchaseController::class, 'history'])->name('api.plan.history');
 
     Route::post('/purchase', [PurchaseController::class, 'addPurchase'])->name('api.add.purchase');
-
-    Route::post('/purchase/status', [PurchaseController::class, 'Status'])->name('api.purchase');
 
     Route::get('/user', [UserController::class, 'user'])->name('api.user');
 
