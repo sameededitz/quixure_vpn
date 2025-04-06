@@ -6,7 +6,6 @@
                 <th scope="col">Name</th>
                 <th scope="col">Email</th>
                 <th scope="col">Plan</th>
-                <th scope="col">Premium</th>
                 <th scope="col">Last Login</th>
                 <th scope="col">Joined</th>
                 <th scope="col">Action</th>
@@ -25,6 +24,10 @@
                     </td>
                     <td>
                         <div class="d-flex align-items-center">
+                            <a href="{{ route('user-purchases', $user->id) }}"
+                                class="w-32-px me-4 h-32-px bg-info-focus text-info-main rounded-circle d-inline-flex align-items-center justify-content-center">
+                                <iconify-icon icon="ic:round-manage-accounts"></iconify-icon>
+                            </a>
                             <a href="{{ route('edit-user', $user->id) }}"
                                 class="w-32-px me-4 h-32-px bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center">
                                 <iconify-icon icon="lucide:edit"></iconify-icon>
