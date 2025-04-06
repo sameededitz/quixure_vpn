@@ -31,6 +31,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [UserController::class, 'user'])->name('api.user');
 
     Route::put('/user/update', [UserController::class, 'update'])->name('api.user.update');
+
+    Route::delete('/user/delete', [UserController::class, 'deleteAccount'])->name('api.user.delete');
 });
 
 Route::post('/email/resend-verification', [VerifyController::class, 'resendVerify'])->name('api.verify.resend');
