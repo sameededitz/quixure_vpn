@@ -38,7 +38,8 @@ Route::get('/migrate', function () {
 
 Route::get('/reset-plans-table', function () {
     DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-    
+
+    Purchase::truncate();
     Plan::truncate();
 
     DB::statement('SET FOREIGN_KEY_CHECKS=1;');
