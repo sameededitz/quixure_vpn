@@ -8,7 +8,7 @@
                 <th scope="col">Plan</th>
                 <th scope="col">Premium</th>
                 <th scope="col">Last Login</th>
-                <th scope="col">Time</th>
+                <th scope="col">Joined</th>
                 <th scope="col">Action</th>
             </tr>
         </thead>
@@ -18,28 +18,10 @@
                     <td><a href="javascript:void(0)" class="text-primary-600"> {{ $loop->iteration }} </a></td>
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
-                    <td>
-                        @if ($user->purchases)
-                            {{ $user->purchases->plan->name }}
-                        @else
-                            -
-                        @endif
-                    </td>
-                    <td>
-                        @if ($user->purchases)
-                            <button type="submit" wire:click="clearPurchase({{ $user->id }})"
-                                class="w-32-px h-32-px bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center">
-                                <iconify-icon icon="ic:sharp-clear"></iconify-icon>
-                            </button>
-                        @else
-                            <button type="submit" wire:click="openModal({{ $user->id }})"
-                                class="w-32-px h-32-px bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center">
-                                <iconify-icon icon="fluent:money-16-regular"></iconify-icon>
-                            </button>
-                        @endif
-                    </td>
+                    <td>{{ $user->activePlan ? $user->activePlan->plan->name : 'Free' }}</td>
                     <td>{{ $user->last_login ? $user->last_login->diffForHumans() : 'Never' }}</td>
-                    <td>C: {{ $user->created_at->diffForHumans() }}<br>U: {{ $user->updated_at->diffForHumans() }}
+                    <td>
+                        {{ $user->created_at->diffForHumans() }}
                     </td>
                     <td>
                         <div class="d-flex align-items-center">

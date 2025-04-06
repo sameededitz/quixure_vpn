@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Notifications\CustomResetPassword;
 use App\Notifications\CustomVerifyEmailNotification;
-use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -79,12 +78,17 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function purchases()
     {
-        return $this->hasOne(Purchase::class);
+        return $this->hasMany(Purchase::class);
     }
 
     public function isPremium()
     {
-        return $this->purchases()->where('is_active', true)->where('expires_at', '>', Carbon::now())->exists();
+        return $this->purchases()->where('is_active', true)->where('expires_at', '>', now())->exists();
+    }
+
+    public function activePlan()
+    {
+        return $this->hasOne(Purchase::class)->where('status', 'active')->where('end_date', '>', now())->latest();
     }
 
     public function assignFreeTrial()
@@ -96,8 +100,8 @@ class User extends Authenticatable implements MustVerifyEmail
             Purchase::create([
                 'user_id' => $this->id,
                 'plan_id' => 1,
-                'started_at' => Carbon::now(),
-                'expires_at' => Carbon::now()->addDays(3),
+                'started_at' => now(),
+                'expires_at' => now()->addDays(3),
                 'is_active' => true,
             ]);
         }
