@@ -83,7 +83,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function isPremium()
     {
-        return $this->purchases()->where('is_active', true)->where('expires_at', '>', now())->exists();
+        return $this->hasOne(Purchase::class)->where('is_active', true)->where('expires_at', '>', now())->exists();
     }
 
     public function activePlan()
