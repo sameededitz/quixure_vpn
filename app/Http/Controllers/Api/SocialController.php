@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Support\Str;
+use App\Services\AppleToken;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Validator;
 
 class SocialController extends Controller
 {
@@ -74,7 +75,7 @@ class SocialController extends Controller
         }
     }
 
-    public function handleAppleCallback(Request $request)
+    public function handleAppleCallback(Request $request, AppleToken $appleToken)
     {
         $validator = Validator::make($request->all(), [
             'id_token' => 'required|string',
@@ -90,7 +91,9 @@ class SocialController extends Controller
         $id_token = $request->input('id_token');
 
         try {
-            $appleUser = Socialite::driver('apple')->stateless()->userFromToken($request->input('token'));
+            config()->set('services.apple.client_secret', $appleToken->generateClientSecret(true));
+
+            $appleUser = Socialite::driver('apple')->userFromToken($id_token);
 
             if (!$appleUser->user['email_verified']) {
                 return response()->json([
