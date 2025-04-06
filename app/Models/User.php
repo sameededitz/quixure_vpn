@@ -92,12 +92,11 @@ class User extends Authenticatable implements MustVerifyEmail
             return;
         }
         if ($this->role === 'normal') {
-            Purchase::create([
-                'user_id' => $this->id,
+            $this->purchases()->create([
                 'plan_id' => 1,
-                'started_at' => now(),
-                'expires_at' => now()->addDays(3),
-                'is_active' => true,
+                'status' => 'active',
+                'start_date' => now(),
+                'end_date' => now()->addDays(3),
             ]);
         }
     }

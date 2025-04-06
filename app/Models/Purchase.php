@@ -14,9 +14,10 @@ class Purchase extends Model
     protected $fillable = [
         'user_id',
         'plan_id',
-        'started_at',
-        'expires_at',
-        'is_active',
+        'amount_paid',
+        'start_date',
+        'end_date',
+        'status'
     ];
 
     public function user(): BelongsTo
@@ -29,19 +30,13 @@ class Purchase extends Model
         return $this->belongsTo(Plan::class);
     }
 
-    // Method to automatically expire subscriptions
-    public static function expireSubscriptions()
-    {
-        self::where('is_active', true)
-            ->where('expires_at', '<=', Carbon::now())
-            ->update(['is_active' => false]);
-    }
-
     protected function casts(): array
     {
         return [
-            'started_at' => 'datetime',
-            'expires_at' => 'datetime',
+            'start_date' => 'datetime',
+            'end_date' => 'datetime',
+            'amount_paid' => 'decimal:2',
+            'status' => 'string',
         ];
     }
 }
