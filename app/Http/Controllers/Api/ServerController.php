@@ -23,7 +23,7 @@ class ServerController extends Controller
     public function plans()
     {
         // Fetch all plans except the one with ID 1
-        $plans = Plan::all(); // Exclude plan with ID 1
+        $plans = Plan::where('id', '!=', 1)->get(); // Exclude plan with ID 1
 
         return response()->json([
             'status' => true,
