@@ -18,7 +18,7 @@
                     <td><a href="javascript:void(0)" class="text-primary-600"> {{ $loop->iteration }} </a></td>
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
-                    <td>{{ $user->activePlan ? $user->activePlan->plan->name : 'Free' }}</td>
+                    <td>{{ $user->isPremium ? $user->isPremium->plan->name : 'Free' }}</td>
                     <td>{{ $user->last_login ? $user->last_login->diffForHumans() : 'Never' }}</td>
                     <td>
                         {{ $user->created_at->diffForHumans() }}
