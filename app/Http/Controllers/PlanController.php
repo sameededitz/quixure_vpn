@@ -9,7 +9,7 @@ class PlanController extends Controller
 {
     public function Plans()
     {
-        $plans = Plan::all();
+        $plans = Plan::where('id' , '!=', 1)->get();
         return view('admin.all-plans', compact('plans'));
     }
 
