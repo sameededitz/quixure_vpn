@@ -48,7 +48,7 @@
                             <li class="d-flex align-items-center gap-1 mb-12">
                                 <span class="w-30 text-md fw-semibold text-primary-light"> Last Login</span>
                                 <span class="w-70 text-secondary-light fw-medium">:
-                                    {{ $user->last_login->diffForHumans() }} </span>
+                                    {{ $user->last_login ? $user->last_login->diffForHumans() : 'Never' }} </span>
                             </li>
                             <li class="d-flex align-items-center gap-1 mb-12">
                                 <span class="w-30 text-md fw-semibold text-primary-light"> Registered</span>
