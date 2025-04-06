@@ -88,7 +88,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function assignFreeTrial()
     {
-        if ($this->isPremium()) {
+        if ($this->activePlan()) {
             return;
         }
         if ($this->role === 'normal') {
