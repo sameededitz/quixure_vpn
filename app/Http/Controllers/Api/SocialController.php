@@ -32,15 +32,12 @@ class SocialController extends Controller
         try {
             /** @disregard @phpstan-ignore-line */
             $googleUser = Socialite::driver('google')->userFromToken($accessToken);
-
-            Log::channel('auth')->info('Google user retrieved: ', ['user' => $googleUser]);
             
             // Check if the user already exists
             /** @var \App\Models\User $user **/
             $user = User::where('email', $googleUser->getEmail())->first();
 
             if ($user) {
-                Log::channel('auth')->info('User already exists with Google ID: ', ['google_id' => $googleUser->getId(), 'email' => $googleUser->getEmail()]);
 
                 // If user exists, update all details except email
                 $user->update([
@@ -50,7 +47,6 @@ class SocialController extends Controller
             } else {
                 /** @var \App\Models\User $user **/
                 // If user does not exist, create a new user
-                Log::channel('auth')->info('Creating new user with Google ID: ', ['google_id' => $googleUser->getId(), 'email' => $googleUser->getEmail()]);
 
                 $user = User::create([
                     'name' => $googleUser->getName(),
@@ -108,8 +104,6 @@ class SocialController extends Controller
             /** @disregard @phpstan-ignore-line */
             $appleUser = Socialite::driver('apple')->userFromToken($id_token);
 
-            Log::channel('auth')->info('Apple user retrieved: ', ['user' => $appleUser]);
-
             if (!$appleUser->user['email_verified']) {
                 return response()->json([
                     'status' => false,
@@ -126,14 +120,11 @@ class SocialController extends Controller
             $user = User::where('apple_id', $appleId)->orWhere('email', $email)->first();
 
             if ($user) {
-                Log::channel('auth')->info('User already exists with Apple ID: ', ['apple_id' => $appleId, 'email' => $email]);
                 // Update Apple ID if needed
                 $user->update(['apple_id' => $appleId]);
             } else {
                 /** @var \App\Models\User $user **/
                 // Create a new user
-
-                Log::channel('auth')->info('Creating new user with Apple ID: ', ['apple_id' => $appleId, 'email' => $email]);
 
                 $user = User::create([
                     'name' => $name,
