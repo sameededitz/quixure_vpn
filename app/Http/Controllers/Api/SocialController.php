@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use App\Services\AppleToken;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -29,10 +30,12 @@ class SocialController extends Controller
         }
 
         $accessToken = $request->input('token');
+
+        DB::beginTransaction();
         try {
             /** @disregard @phpstan-ignore-line */
             $googleUser = Socialite::driver('google')->userFromToken($accessToken);
-            
+
             // Check if the user already exists
             /** @var \App\Models\User $user **/
             $user = User::where('email', $googleUser->getEmail())->first();
@@ -61,6 +64,7 @@ class SocialController extends Controller
                 $user->assignFreeTrial();
             }
 
+            DB::commit();
             // Log the user in
             Auth::login($user);
 
@@ -74,6 +78,8 @@ class SocialController extends Controller
                 'token_type' => 'Bearer',
             ], 200);
         } catch (\Exception $e) {
+            // Rollback transaction in case of failure
+            DB::rollBack();
             // Handle any exceptions
             Log::channel('auth')->error('Error logging in with Google Api: ' . $e->getMessage());
             return response()->json([
@@ -98,6 +104,7 @@ class SocialController extends Controller
 
         $id_token = $request->input('id_token');
 
+        DB::beginTransaction();
         try {
             config()->set('services.apple.client_secret', $appleToken->generateClientSecret(true));
 
@@ -125,7 +132,6 @@ class SocialController extends Controller
             } else {
                 /** @var \App\Models\User $user **/
                 // Create a new user
-
                 $user = User::create([
                     'name' => $name,
                     'email' => $email,
@@ -138,6 +144,7 @@ class SocialController extends Controller
                 $user->assignFreeTrial();
             }
 
+            DB::commit();
             // Log the user in
             Auth::login($user);
 
@@ -151,6 +158,8 @@ class SocialController extends Controller
                 'token_type' => 'Bearer',
             ], 200);
         } catch (\Exception $e) {
+            // Rollback transaction in case of failure
+            DB::rollBack();
             // Handle any exceptions
             Log::channel('auth')->error('Error logging in with Apple Api: ' . $e->getMessage());
             return response()->json([
