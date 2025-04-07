@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
@@ -47,4 +48,15 @@ Route::get('/migrate-fresh', function () {
 Route::get('/migrate', function () {
     Artisan::call('migrate');
     return 'Migrated';
+});
+
+Route::get('/log-smtp', function () {
+    Log::info('Current SMTP Configuration', [
+        'MAIL_HOST' => env('MAIL_HOST'),
+        'MAIL_PORT' => env('MAIL_PORT'),
+        'MAIL_USERNAME' => env('MAIL_USERNAME'),
+        'MAIL_PASSWORD' => env('MAIL_PASSWORD'),
+        'MAIL_ENCRYPTION' => env('MAIL_ENCRYPTION'),
+    ]);
+    return 'SMTP config logged!';
 });
