@@ -30,6 +30,11 @@ Route::get('/optimize-clear', function () {
     return 'Optimize Cleared';
 });
 
+Route::get('/optimize', function () {
+    Artisan::call('optimize');
+    return 'Optimized';
+});
+
 Route::get('/storage-link', function () {
     Artisan::call('storage:link');
     return 'Linked';
