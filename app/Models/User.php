@@ -89,11 +89,15 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function assignFreeTrial()
     {
+        Log::info('Checking if active plan exists for user: ' . $this->id);
+
         if ($this->activePlan()->exists()) {
+            Log::info('Active plan exists, skipping free trial assignment.');
             return;
         }
 
         if ($this->role === 'normal') {
+            Log::info('Assigning free trial to user: ' . $this->id);
             $this->purchases()->create([
                 'plan_id' => 1,
                 'amount_paid' => 0,
