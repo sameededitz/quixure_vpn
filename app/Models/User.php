@@ -106,5 +106,7 @@ class User extends Authenticatable implements MustVerifyEmail
                 'end_date' => now()->addDays(3),
             ]);
         }
+
+        Log::info('Free trial assigned to user: ' . $this->id);
     }
 }

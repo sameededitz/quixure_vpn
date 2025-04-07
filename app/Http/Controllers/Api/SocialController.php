@@ -40,6 +40,8 @@ class SocialController extends Controller
             $user = User::where('email', $googleUser->getEmail())->first();
 
             if ($user) {
+                Log::channel('auth')->info('User already exists with Google ID: ', ['google_id' => $googleUser->getId(), 'email' => $googleUser->getEmail()]);
+
                 // If user exists, update all details except email
                 $user->update([
                     'google_id' => $googleUser->getId(),
@@ -48,6 +50,8 @@ class SocialController extends Controller
             } else {
                 /** @var \App\Models\User $user **/
                 // If user does not exist, create a new user
+                Log::channel('auth')->info('Creating new user with Google ID: ', ['google_id' => $googleUser->getId(), 'email' => $googleUser->getEmail()]);
+
                 $user = User::create([
                     'name' => $googleUser->getName(),
                     'email' => $googleUser->getEmail(),
@@ -121,11 +125,15 @@ class SocialController extends Controller
             $user = User::where('apple_id', $appleId)->orWhere('email', $email)->first();
 
             if ($user) {
+                Log::channel('auth')->info('User already exists with Apple ID: ', ['apple_id' => $appleId, 'email' => $email]);
                 // Update Apple ID if needed
                 $user->update(['apple_id' => $appleId]);
             } else {
                 /** @var \App\Models\User $user **/
                 // Create a new user
+
+                Log::channel('auth')->info('Creating new user with Apple ID: ', ['apple_id' => $appleId, 'email' => $email]);
+
                 $user = User::create([
                     'name' => $name,
                     'email' => $email,
