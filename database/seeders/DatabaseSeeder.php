@@ -15,10 +15,10 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Create one admin user
-        // User::factory()->admin()->create();
+        User::factory()->admin()->create();
 
         // Create one regular user
-        // User::factory()->user()->create();
+        User::factory()->user()->create();
 
         Plan::factory()->trial()->create();
     }

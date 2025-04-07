@@ -3,20 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Mail\ResetPasswordToken;
+use App\Jobs\SendEmailVerification;
+use App\Jobs\SendPasswordReset;
 use App\Models\User;
-use Illuminate\Auth\Events\PasswordReset;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 
 class VerifyController extends Controller
 {
-    public function resendVerify(Request $request)
+    public function resend(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
@@ -29,12 +25,14 @@ class VerifyController extends Controller
             ], 400);
         }
 
-        $user = User::where('email', $request->email)->get()->first();
+        /** @var \App\Models\User $user **/
+        $user = User::where('email', $request->email)->first();
+
         if (!$user) {
             return response()->json([
                 'status' => false,
-                'message' => "We couldn't find an account with that email."
-            ], 400);
+                'message' => 'User not found'
+            ], 404);
         }
 
         if ($user->hasVerifiedEmail()) {
@@ -44,7 +42,8 @@ class VerifyController extends Controller
             ], 200);
         }
 
-        $user->sendEmailVerificationNotification();
+        SendEmailVerification::dispatch($user)->delay(now()->addSeconds(5));
+
         return response()->json([
             'status' => true,
             'message' => 'A new verification link has been sent to the email address you provided during registration.'
@@ -69,57 +68,17 @@ class VerifyController extends Controller
         if (!$user) {
             return response()->json([
                 'status' => false,
-                'message' => 'User not found.'
+                'message' => 'Email not found!'
             ], 400);
         }
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
 
-        if ($status == Password::RESET_LINK_SENT) {
-            return response()->json([
-                'status' => true,
-                'message' => 'Password reset link sent. Please check your email.'
-            ], 200);
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => __($status)
-            ], 400);
-        }
-    }
-    public function resetPassword(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'token' => 'required|string',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+        $token = Password::createToken($user);
 
-        $reset = DB::table('password_resets')
-            ->where('email', $request->email)
-            ->where('token', $request->token)
-            ->first();
-
-        if (!$reset) {
-            return response()->json(['message' => 'Invalid token'], 400);
-        }
-
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
-        }
-
-        $user->password = Hash::make($request->password);
-        $user->save();
-
-        // Delete the reset record after successful password reset
-        DB::table('password_resets')->where('email', $request->email)->delete();
+        SendPasswordReset::dispatch($user, $token)->delay(now()->addSeconds(5));
 
         return response()->json([
             'status' => true,
-            'message' => 'Password reset successfully'
+            'message' => 'Password reset link sent. Please check your Inbox.'
         ], 200);
     }
 }

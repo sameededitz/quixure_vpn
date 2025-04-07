@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendEmailVerification;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,7 +37,7 @@ class AuthController extends Controller
         /** @var \App\Models\User $user **/
         $user->assignFreeTrial();
 
-        $user->sendEmailVerificationNotification();
+        SendEmailVerification::dispatch($user)->delay(now()->addSeconds(2));
 
         return response()->json([
             'status' => true,
