@@ -59,6 +59,7 @@ class SocialController extends Controller
                     'avatar' => $googleUser->getAvatar(),
                     'password' => Hash::make(Str::random(10)),
                     'email_verified_at' => now(),
+                    'role' => 'normal',
                 ]);
 
                 $user->assignFreeTrial();
@@ -140,6 +141,7 @@ class SocialController extends Controller
                     'apple_id' => $appleId,
                     'password' => Hash::make(Str::random(10)),
                     'email_verified_at' => now(),
+                    'role' => 'normal',
                 ]);
 
                 $user->assignFreeTrial();
