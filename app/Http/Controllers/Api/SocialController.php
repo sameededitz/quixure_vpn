@@ -30,9 +30,13 @@ class SocialController extends Controller
 
         $accessToken = $request->input('token');
         try {
+            /** @disregard @phpstan-ignore-line */
             $googleUser = Socialite::driver('google')->userFromToken($accessToken);
 
+            Log::channel('auth')->info('Google user retrieved: ', ['user' => $googleUser]);
+            
             // Check if the user already exists
+            /** @var \App\Models\User $user **/
             $user = User::where('email', $googleUser->getEmail())->first();
 
             if ($user) {
@@ -42,6 +46,7 @@ class SocialController extends Controller
                     'avatar' => $googleUser->getAvatar(),
                 ]);
             } else {
+                /** @var \App\Models\User $user **/
                 // If user does not exist, create a new user
                 $user = User::create([
                     'name' => $googleUser->getName(),
@@ -51,6 +56,8 @@ class SocialController extends Controller
                     'password' => Hash::make(Str::random(10)),
                     'email_verified_at' => now(),
                 ]);
+
+                $user->assignFreeTrial();
             }
 
             // Log the user in
@@ -67,7 +74,7 @@ class SocialController extends Controller
             ], 200);
         } catch (\Exception $e) {
             // Handle any exceptions
-            Log::error('Error logging in with Google Api: ' . $e->getMessage());
+            Log::channel('auth')->error('Error logging in with Google Api: ' . $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error logging in with Google: ' . $e->getMessage(),
@@ -93,7 +100,10 @@ class SocialController extends Controller
         try {
             config()->set('services.apple.client_secret', $appleToken->generateClientSecret(true));
 
+            /** @disregard @phpstan-ignore-line */
             $appleUser = Socialite::driver('apple')->userFromToken($id_token);
+
+            Log::channel('auth')->info('Apple user retrieved: ', ['user' => $appleUser]);
 
             if (!$appleUser->user['email_verified']) {
                 return response()->json([
@@ -107,12 +117,14 @@ class SocialController extends Controller
             $email = $appleUser->email;
             $name = $appleUser->name ?? $email;
 
+            /** @var \App\Models\User $user **/
             $user = User::where('apple_id', $appleId)->orWhere('email', $email)->first();
 
             if ($user) {
                 // Update Apple ID if needed
                 $user->update(['apple_id' => $appleId]);
             } else {
+                /** @var \App\Models\User $user **/
                 // Create a new user
                 $user = User::create([
                     'name' => $name,
@@ -121,6 +133,8 @@ class SocialController extends Controller
                     'password' => Hash::make(Str::random(10)),
                     'email_verified_at' => now(),
                 ]);
+
+                $user->assignFreeTrial();
             }
 
             // Log the user in
@@ -137,7 +151,7 @@ class SocialController extends Controller
             ], 200);
         } catch (\Exception $e) {
             // Handle any exceptions
-            Log::error('Error logging in with Apple Api: ' . $e->getMessage());
+            Log::channel('auth')->error('Error logging in with Apple Api: ' . $e->getMessage());
             return response()->json([
                 'status' => false,
                 'message' => 'Error logging in with Apple: ' . $e->getMessage(),
